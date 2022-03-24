@@ -17,6 +17,7 @@ WORKDIR /app
 # Copy project files
 COPY --from=node /app/package*.json ./
 COPY --from=node /app/dist ./dist
+COPY .env ./
 
 # install node packages
 RUN npm set progress=false && npm config set depth 0
