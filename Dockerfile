@@ -1,6 +1,20 @@
-FROM tiangolo/nginx-rtmp
+# Base Image
+FROM node:lts-alpine
 
-COPY nginx.conf /etc/nginx/nginx.conf
+# Set working directory
+WORKDIR /app
+
+# Copy project files
+COPY package*.json ./
+COPY ./dist ./dist
+
+# install node packages
+RUN npm set progress=false && npm config set depth 0
+RUN npm install ci --only=production --ignore-scripts
+
+# expose port and define CMD
+EXPOSE 3000
+CMD ["npm", "run", "start:prod"]
 
 # docker build -t rtmp-stream-app:latest .
-# docker run -d -p 1935:1935 -p 3000:3000 --name rtmp-stream-app rtmp-stream-app:latest
+# docker run -d -p 3000:3000 rtmp-stream-app:latest
