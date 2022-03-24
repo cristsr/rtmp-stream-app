@@ -1,12 +1,22 @@
 # Base Image
-FROM node:lts-alpine
+FROM node:lts-alpine as node
+
+WORKDIR /app
+
+COPY ./ /app/
+
+RUN npm install ci
+
+RUN npm run build
+
+FROM node:lts-alpine as rtmp-stream-app
 
 # Set working directory
 WORKDIR /app
 
 # Copy project files
-COPY package*.json ./
-COPY ./dist ./dist
+COPY --from=node /app/package*.json ./
+COPY --from=node /app/dist ./dist
 
 # install node packages
 RUN npm set progress=false && npm config set depth 0

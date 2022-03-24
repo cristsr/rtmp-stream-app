@@ -4,14 +4,6 @@ echo "Pulling latest changes from GitHub"
 
 git pull
 
-echo "Install dependencies"
-
-npm run install
-
-echo "Build the project"
-
-npm run build
-
 echo "Stop the old server"
 
 docker stop rtmp-stream-app
