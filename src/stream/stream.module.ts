@@ -8,8 +8,8 @@ import { MEDIA_SERVER } from './constants';
   providers: [
     {
       provide: MEDIA_SERVER,
-      useFactory: (config: ConfigService) =>
-        new NodeMediaServer({
+      useFactory: (config: ConfigService) => {
+        return new NodeMediaServer({
           logType: 3,
 
           rtmp: {
@@ -22,7 +22,7 @@ import { MEDIA_SERVER } from './constants';
           http: {
             port: 3000,
             allow_origin: '*',
-            mediaroot: '',
+            mediaroot: './media',
           },
           trans: {
             ffmpeg: '/usr/bin/ffmpeg',
@@ -37,7 +37,8 @@ import { MEDIA_SERVER } from './constants';
               },
             ],
           },
-        }),
+        });
+      },
       inject: [ConfigService],
     },
     StreamService,

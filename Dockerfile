@@ -3,29 +3,17 @@ FROM node:lts-alpine as node
 
 WORKDIR /app
 
+RUN apk add ffmpeg
+RUN ffmpeg -h
+
 COPY ./ /app/
-
-RUN npm install ci
-
-RUN npm run build
-
-FROM node:lts-alpine as rtmp-stream-app
-
-# Set working directory
-WORKDIR /app
-
-# Copy project files
-COPY --from=node /app/package*.json ./
-COPY --from=node /app/dist ./dist
 COPY .env ./
 
-# install node packages
-RUN npm set progress=false && npm config set depth 0
-RUN npm install ci --only=production --ignore-scripts
+RUN npm install ci
+RUN npm run build
 
-# expose port and define CMD
 EXPOSE 3000
+EXPOSE 1935
 CMD ["npm", "run", "start:prod"]
-
 # docker build -t rtmp-stream-app:latest .
-# docker run -d -p 3000:3000 rtmp-stream-app:latest
+# docker run -d -p 3000:3000 -p 1935:1935 rtmp-stream-app:latest

@@ -11,6 +11,8 @@ async function bootstrap() {
 
   mediaServer.run();
 
+  console.log(mediaServer);
+
   await app.init();
 
   Logger.log(`App is running`, 'Bootstrap');
