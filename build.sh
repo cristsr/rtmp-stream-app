@@ -18,6 +18,6 @@ docker build -t rtmp-stream-app:latest .
 
 echo "Run the new server"
 
-docker run -d -p 1935:1935 -p 3000:3000 --name rtmp-stream-app rtmp-stream-app:latest
+docker run -d -p 1935:1935 -p 80:80 -p 443:443 --name rtmp-stream-app rtmp-stream-app:latest
 
 echo "Build Successfully"
