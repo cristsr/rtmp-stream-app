@@ -1,9 +1,5 @@
 #!/bin/bash
 
-echo "Pulling latest changes from GitHub"
-
-git pull
-
 echo "Stop the old server"
 
 docker stop rtmp-stream-app
