@@ -6,16 +6,28 @@ export class Environment {
   @IsString()
   ENV: string = null;
 
-  @Transform(({ value }) => Number(value))
-  @IsNumber()
-  PORT: number = null;
-
   @IsString()
   DB_URI: string = null;
 
+  @Transform(({ value }) => +value)
+  @IsNumber()
+  RTMP_PORT: number = null;
+
+  @Transform(({ value }) => +value)
+  @IsNumber()
+  RTMP_CHUNK_SIZE: number = null;
+
+  @Transform(({ value }) => +value)
+  @IsNumber()
+  HTTP_PORT: number = null;
+
   @Transform(({ value }) => value === 'true')
   @IsBoolean()
-  SHOW_DOCS: boolean = null;
+  ENABLE_HLS: boolean = null;
+
+  @Transform(({ value }) => +value)
+  @IsNumber()
+  MEDIA_SERVER_LOG_LEVEL: number = null;
 }
 
 export const ENV = mapEnvironmentKeys<Environment>(Environment);
