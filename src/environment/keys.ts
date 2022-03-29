@@ -28,6 +28,9 @@ export class Environment {
   @Transform(({ value }) => +value)
   @IsNumber()
   MEDIA_SERVER_LOG_LEVEL: number = null;
+
+  @IsString()
+  STREAM_APP_URL: string = null;
 }
 
 export const ENV = mapEnvironmentKeys<Environment>(Environment);

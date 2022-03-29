@@ -4,8 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import NodeMediaServer from 'node-media-server';
 import { MEDIA_SERVER } from './constants';
 import { ENV } from 'environment';
+import { StreamRepository } from './repositories/stream.repository';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
+  imports: [HttpModule],
   providers: [
     {
       provide: MEDIA_SERVER,
@@ -42,6 +45,7 @@ import { ENV } from 'environment';
       inject: [ConfigService],
     },
     StreamService,
+    StreamRepository,
   ],
 })
 export class StreamModule {}
