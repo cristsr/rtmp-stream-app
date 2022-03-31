@@ -24,7 +24,7 @@ export class StreamMsRepository {
   }
 
   removeStream(key: string): Promise<boolean> {
-    const url = this.config.get(ENV.STREAM_APP_URL) + '/stream/remove' + key;
+    const url = this.config.get(ENV.STREAM_APP_URL) + '/stream/remove/' + key;
 
     this.logger.log(`Removing stream from ${url}`);
 
