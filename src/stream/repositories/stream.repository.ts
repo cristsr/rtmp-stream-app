@@ -1,50 +1,39 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { catchError, EMPTY, mapTo, Observable } from 'rxjs';
-import { ConfigService } from '@nestjs/config';
-import { ENV } from 'environment';
+import { InjectModel } from '@nestjs/mongoose';
+import { Stream, StreamDocument } from '../schemas/stream.schema';
+import { Model } from 'mongoose';
+import { classToPlain } from 'class-transformer';
 
 @Injectable()
 export class StreamRepository {
   private logger = new Logger(StreamRepository.name);
 
-  constructor(private http: HttpService, private config: ConfigService) {}
+  constructor(
+    @InjectModel(Stream.name)
+    private streamModel: Model<StreamDocument>,
+  ) {}
 
-  addStream(key: string, id: string): Observable<boolean> {
-    const url = this.config.get(ENV.STREAM_APP_URL) + '/stream/add';
+  async findByKey(key: string): Promise<Record<any, any>> {
+    const stream = await this.streamModel
+      .findOne({ key })
+      .populate('user')
+      .exec();
 
-    this.logger.log(`Adding stream to ${url}`);
+    if (!stream) {
+      return null;
+    }
 
-    const data = {
-      key,
-      id,
-    };
-
-    return this.http.post(url, data).pipe(
-      mapTo(true),
-      catchError((e) => {
-        this.logger.error(e.message);
-        return EMPTY;
+    return classToPlain(
+      stream.toJSON({
+        virtuals: true,
+        transform: (doc, ret) => {
+          ret.id = ret._id.toString();
+          return ret;
+        },
       }),
-    );
-  }
-
-  removeStream(key: string, id: string): Observable<boolean> {
-    const url = this.config.get(ENV.STREAM_APP_URL) + '/stream/remove';
-
-    this.logger.log(`Removing stream from ${url}`);
-
-    const data = {
-      key,
-      id,
-    };
-
-    return this.http.post(url, data).pipe(
-      mapTo(true),
-      catchError((e) => {
-        this.logger.error(e.message);
-        return EMPTY;
-      }),
+      {
+        excludePrefixes: ['_'],
+      },
     );
   }
 }

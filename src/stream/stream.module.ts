@@ -4,11 +4,26 @@ import { ConfigService } from '@nestjs/config';
 import NodeMediaServer from 'node-media-server';
 import { MEDIA_SERVER } from './constants';
 import { ENV } from 'environment';
-import { StreamRepository } from './repositories/stream.repository';
 import { HttpModule } from '@nestjs/axios';
+import { StreamRepository, StreamMsRepository } from './repositories';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Stream, StreamSchema } from './schemas/stream.schema';
+import { User, UserSchema } from './schemas/user.schema';
 
 @Module({
-  imports: [HttpModule],
+  imports: [
+    HttpModule,
+    MongooseModule.forFeature([
+      {
+        name: Stream.name,
+        schema: StreamSchema,
+      },
+      {
+        name: User.name,
+        schema: UserSchema,
+      },
+    ]),
+  ],
   providers: [
     {
       provide: MEDIA_SERVER,
@@ -46,6 +61,7 @@ import { HttpModule } from '@nestjs/axios';
     },
     StreamService,
     StreamRepository,
+    StreamMsRepository,
   ],
 })
 export class StreamModule {}
