@@ -37,7 +37,14 @@ export class StreamService implements OnModuleInit {
     this.nms.on('donePublish', async (id: string, streamPath: string) => {
       const key = extractKeyFromPath(streamPath);
 
-      await this.streamMsRepository.removeStream(key);
+      const stream = await this.streamRepository.findByKey(key);
+
+      if (!stream) {
+        this.logger.error(`Stream with key ${key} not found`);
+        return;
+      }
+
+      await this.streamMsRepository.removeStream(stream.id);
       this.logger.log(`Stream removed: ${key} - ${id}`);
     });
   }
