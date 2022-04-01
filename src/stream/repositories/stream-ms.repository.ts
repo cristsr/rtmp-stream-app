@@ -11,7 +11,7 @@ export class StreamMsRepository {
   constructor(private http: HttpService, private config: ConfigService) {}
 
   addStream(stream): Promise<any> {
-    const url = this.config.get(ENV.STREAM_APP_URL) + '/stream/add';
+    const url = this.config.get(ENV.STREAM_APP_URL) + '/stream';
 
     this.logger.log(`Adding stream to ${url}`);
 
@@ -24,7 +24,7 @@ export class StreamMsRepository {
   }
 
   removeStream(key: string): Promise<boolean> {
-    const url = this.config.get(ENV.STREAM_APP_URL) + '/stream/remove/' + key;
+    const url = this.config.get(ENV.STREAM_APP_URL) + '/stream/' + key;
 
     this.logger.log(`Removing stream from ${url}`);
 
