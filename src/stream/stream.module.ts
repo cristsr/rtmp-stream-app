@@ -2,28 +2,15 @@ import { Module } from '@nestjs/common';
 import { StreamService } from './services/stream.service';
 import { ConfigService } from '@nestjs/config';
 import NodeMediaServer from 'node-media-server';
-import { MEDIA_SERVER } from './constants';
+import { MEDIA_SERVER, MONGO_CLIENT } from './constants';
 import { ENV } from 'environment';
 import { HttpModule } from '@nestjs/axios';
 import { StreamRepository, StreamMsRepository } from './repositories';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Stream, StreamSchema } from './schemas/stream.schema';
-import { User, UserSchema } from './schemas/user.schema';
+import { MongoClient } from 'mongodb';
+import { ThumbnailService } from './services/thumbnail.service';
 
 @Module({
-  imports: [
-    HttpModule,
-    MongooseModule.forFeature([
-      {
-        name: Stream.name,
-        schema: StreamSchema,
-      },
-      {
-        name: User.name,
-        schema: UserSchema,
-      },
-    ]),
-  ],
+  imports: [HttpModule],
   providers: [
     {
       provide: MEDIA_SERVER,
@@ -43,7 +30,7 @@ import { User, UserSchema } from './schemas/user.schema';
             mediaroot: './media',
           },
           trans: {
-            ffmpeg: '/usr/bin/ffmpeg',
+            ffmpeg: config.get(ENV.FFMPEG),
             tasks: [
               {
                 app: 'live',
@@ -59,9 +46,17 @@ import { User, UserSchema } from './schemas/user.schema';
       },
       inject: [ConfigService],
     },
+    {
+      provide: MONGO_CLIENT,
+      useFactory: (config: ConfigService) => {
+        return new MongoClient(config.get(ENV.DB_URI));
+      },
+      inject: [ConfigService],
+    },
     StreamService,
     StreamRepository,
     StreamMsRepository,
+    ThumbnailService,
   ],
 })
 export class StreamModule {}

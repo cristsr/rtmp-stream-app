@@ -1,10 +1,12 @@
-class UserDto {}
+import { IsString } from 'class-validator';
 
-export class StreamDto {
+export class StreamReq {
+  @IsString()
   id: string;
-  title: string;
-  description: string;
-  streamUrl: string;
+
+  @IsString()
+  key: string;
+
+  @IsString()
   thumbnail: string;
-  user: UserDto;
 }

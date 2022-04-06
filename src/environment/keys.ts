@@ -31,6 +31,9 @@ export class Environment {
 
   @IsString()
   STREAM_APP_URL: string = null;
+
+  @IsString()
+  FFMPEG: string = null;
 }
 
 export const ENV = mapEnvironmentKeys<Environment>(Environment);

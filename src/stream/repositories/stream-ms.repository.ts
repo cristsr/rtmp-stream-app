@@ -1,41 +1,39 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { catchError, EMPTY, firstValueFrom, lastValueFrom, mapTo } from 'rxjs';
+import { catchError, mapTo, Observable, throwError } from 'rxjs';
 import { ENV } from 'environment';
+import { StreamReq } from '../dto';
 
 @Injectable()
 export class StreamMsRepository {
-  private logger = new Logger(StreamMsRepository.name);
+  private readonly logger = new Logger(StreamMsRepository.name);
+  private readonly streamUrl: string;
 
-  constructor(private http: HttpService, private config: ConfigService) {}
+  constructor(private http: HttpService, private config: ConfigService) {
+    this.streamUrl = this.config.get(ENV.STREAM_APP_URL);
+  }
 
-  addStream(stream): Promise<any> {
-    const url = this.config.get(ENV.STREAM_APP_URL) + '/stream';
+  connectStream(stream: StreamReq): Observable<void> {
+    const url = this.streamUrl + '/stream/connect';
 
     this.logger.log(`Adding stream to ${url}`);
 
-    const source = this.http.post(url, stream).pipe();
-
-    return lastValueFrom(source).catch((e) => {
-      this.logger.error(e.response.data);
-      return false;
-    });
+    return this.http.post(url, stream).pipe(
+      mapTo(null),
+      catchError((e) => throwError(e.response.data)),
+    );
   }
 
-  removeStream(key: string): Promise<boolean> {
-    const url = this.config.get(ENV.STREAM_APP_URL) + '/stream/' + key;
+  disconnectStream(streamId: string): Observable<void> {
+    const url =
+      this.config.get(ENV.STREAM_APP_URL) + '/stream/disconnect/' + streamId;
 
     this.logger.log(`Removing stream from ${url}`);
 
-    const source = this.http.delete(url).pipe(
-      mapTo(true),
-      catchError((e) => {
-        this.logger.error(e.message);
-        return EMPTY;
-      }),
+    return this.http.delete(url).pipe(
+      mapTo(null),
+      catchError((e) => throwError(e.response.data)),
     );
-
-    return firstValueFrom(source);
   }
 }
