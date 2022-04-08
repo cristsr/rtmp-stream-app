@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { StreamMsRepository } from './stream-ms.repository';
+import { StreamMsRepository } from '../stream-ms/stream-ms.repository';
 
 describe('Stream', () => {
   let provider: StreamMsRepository;

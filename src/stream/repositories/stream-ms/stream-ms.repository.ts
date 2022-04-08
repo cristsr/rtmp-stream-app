@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { catchError, mapTo, Observable, throwError } from 'rxjs';
 import { ENV } from 'environment';
-import { StreamReq } from '../dto';
+import { StreamReq } from '../../dto';
 
 @Injectable()
 export class StreamMsRepository {
