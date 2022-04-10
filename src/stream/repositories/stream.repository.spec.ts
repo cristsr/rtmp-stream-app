@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { StreamMsRepository } from '../stream-ms/stream-ms.repository';
+import { StreamProvider } from 'stream/providers';
 
 describe('Stream', () => {
-  let provider: StreamMsRepository;
+  let provider: StreamProvider;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [StreamMsRepository],
+      providers: [StreamProvider],
     }).compile();
 
-    provider = module.get<StreamMsRepository>(StreamMsRepository);
+    provider = module.get<StreamProvider>(StreamProvider);
   });
 
   it('should be defined', () => {

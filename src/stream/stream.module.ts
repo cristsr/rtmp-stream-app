@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
-import { StreamService } from './services/stream.service';
+import { RtmpService } from 'stream/services';
 import { ConfigService } from '@nestjs/config';
 import NodeMediaServer from 'node-media-server';
-import { MEDIA_SERVER, MONGO_CLIENT, ONLINE_STREAMS } from './constants';
+import { MEDIA_SERVER, MONGO_CLIENT } from './constants';
 import { ENV } from 'environment';
 import { HttpModule } from '@nestjs/axios';
-import { StreamRepository, StreamMsRepository } from './repositories';
+import { StreamRepository } from './repositories';
 import { MongoClient } from 'mongodb';
-import { ThumbnailService } from './services/thumbnail.service';
-import { StreamController } from './controllers/stream.controller';
-import { ThumbnailController } from './controllers/thumbnail.controller';
-import { OnlineStreamRepository } from './repositories';
-import { StreamReq } from './dto';
+import { ThumbnailService } from 'stream/services';
+import { StreamController } from './controllers/stream/stream.controller';
+import { ThumbnailController } from './controllers/thumbnail/thumbnail.controller';
+import { StreamProvider } from './providers';
+import { RtmpController } from './controllers/rtmp/rtmp.controller';
 
 @Module({
   imports: [HttpModule],
@@ -57,16 +57,11 @@ import { StreamReq } from './dto';
       },
       inject: [ConfigService],
     },
-    {
-      provide: ONLINE_STREAMS,
-      useValue: new Map<string, StreamReq>(),
-    },
-    StreamService,
+    RtmpService,
     StreamRepository,
-    StreamMsRepository,
+    StreamProvider,
     ThumbnailService,
-    OnlineStreamRepository,
   ],
-  controllers: [StreamController, ThumbnailController],
+  controllers: [StreamController, ThumbnailController, RtmpController],
 })
 export class StreamModule {}

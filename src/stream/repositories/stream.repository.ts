@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { MONGO_CLIENT } from '../../constants';
+import { MONGO_CLIENT } from '../constants';
 import { MongoClient } from 'mongodb';
 import { classToClass } from 'class-transformer';
 

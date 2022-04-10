@@ -1,5 +1,5 @@
 # Base Image
-FROM node:lts-alpine as node
+FROM node:lts-alpine as rtmp-stream-app
 
 WORKDIR /app
 

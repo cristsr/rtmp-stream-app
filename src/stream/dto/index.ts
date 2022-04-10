@@ -6,7 +6,4 @@ export class StreamReq {
 
   @IsString()
   key: string;
-
-  @IsString()
-  thumbnail: string;
 }

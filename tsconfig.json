@@ -20,6 +20,7 @@
     "esModuleInterop": true,
     "paths": {
       "environment": ["./src/environment"],
+      "stream/*": ["./src/stream/*"],
       "database": ["./src/database"],
     }
   }

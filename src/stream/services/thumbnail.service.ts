@@ -2,14 +2,41 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ENV } from 'environment';
 import { spawn } from 'child_process';
+import { existsSync, mkdirSync } from 'fs';
+import { filter, take } from 'rxjs';
+import { watch } from 'stream/utils';
 
 @Injectable()
 export class ThumbnailService {
-  constructor(private config: ConfigService) {}
+  constructor(private config: ConfigService) {
+    this.generate('362b4a42cb1fd7995e7a');
+  }
 
   generate(key: string): void {
-    const cmd = this.config.get(ENV.FFMPEG);
+    const dir = './media/live/{key}'.replace('{key}', key);
 
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
+
+    const source = watch(dir, {}).pipe(
+      filter(({ filename }) => filename === 'index.m3u8'),
+      take(1),
+    );
+
+    source.subscribe({
+      next: () => {
+        this.spawn(key);
+      },
+      error: (err) => {
+        console.log('reader file');
+        console.log(err);
+      },
+    });
+  }
+
+  private spawn(key: string) {
+    const cmd = this.config.get(ENV.FFMPEG);
     const args = [
       '-y',
       '-i',
@@ -23,22 +50,12 @@ export class ThumbnailService {
       `thumbnails/${key}.png`,
     ];
 
-    setTimeout(() => {
-      const ffmpeg = spawn(cmd, args);
+    const ffmpeg = spawn(cmd, args);
 
-      ffmpeg.stdout.on('data', (data) => {
-        console.log(`stdout: ${data}`);
-      });
+    ffmpeg.stderr.on('data', (data) => {
+      console.error(`stderr: ${data}`);
+    });
 
-      ffmpeg.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
-      });
-
-      ffmpeg.on('close', (code) => {
-        console.log(`child process exited with code ${code}`);
-      });
-
-      ffmpeg.unref();
-    }, 2000);
+    ffmpeg.unref();
   }
 }
