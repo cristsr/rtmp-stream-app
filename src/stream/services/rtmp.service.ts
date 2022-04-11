@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
 import { StreamProvider } from 'stream/providers';
 import { StreamRepository } from 'stream/repositories';
-import { StreamReq } from 'stream/dto';
 
 @Injectable()
 export class RtmpService {
@@ -21,12 +19,7 @@ export class RtmpService {
       return session.reject();
     }
 
-    const request = plainToClass(StreamReq, stream);
-
-    this.logger.log(`Connect stream request: `);
-    this.logger.log(request);
-
-    this.streamProvider.connectStream(request).subscribe({
+    this.streamProvider.connectStream(key).subscribe({
       next: () => {
         this.logger.log(`Connect stream successfully`);
       },
@@ -37,13 +30,6 @@ export class RtmpService {
   }
 
   async disconnectStream(key: string): Promise<void> {
-    const stream = await this.streamRepository.findByKey(key);
-
-    if (!stream) {
-      this.logger.error(`Stream with key ${key} not found`);
-      return;
-    }
-
     this.streamProvider.disconnectStream(key).subscribe({
       next: () => {
         this.logger.log(`Disconnect stream successfully`);

@@ -1,61 +1,75 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ENV } from 'environment';
 import { spawn } from 'child_process';
-import { existsSync, mkdirSync } from 'fs';
-import { filter, take } from 'rxjs';
-import { watch } from 'stream/utils';
+import { existsSync, mkdirSync, watch } from 'fs';
 
 @Injectable()
 export class ThumbnailService {
-  constructor(private config: ConfigService) {
-    this.generate('362b4a42cb1fd7995e7a');
-  }
+  private logger = new Logger(ThumbnailService.name);
 
-  generate(key: string): void {
-    const dir = './media/live/{key}'.replace('{key}', key);
+  constructor(private config: ConfigService) {}
+
+  async generate(key: string): Promise<void> {
+    this.logger.log(`Thumbnail service started for ${key}`);
+
+    const dir = './media/live/' + key;
 
     if (!existsSync(dir)) {
       mkdirSync(dir, { recursive: true });
     }
 
-    const source = watch(dir, {}).pipe(
-      filter(({ filename }) => filename === 'index.m3u8'),
-      take(1),
-    );
+    try {
+      await this.watch(dir);
 
-    source.subscribe({
-      next: () => {
-        this.spawn(key);
-      },
-      error: (err) => {
-        console.log('reader file');
-        console.log(err);
-      },
-    });
+      this.logger.log(`File for ${key} was found`);
+
+      const cmd = this.config.get(ENV.FFMPEG);
+      const args = [
+        '-y',
+        '-i',
+        `media/live/${key}/index.m3u8`,
+        '-ss',
+        '00:00:01',
+        '-vframes',
+        '1',
+        '-vf',
+        'scale=-2:300',
+        `media/thumbnails/${key}.png`,
+      ];
+
+      this.logger.log(`Create thumbnail for ${key}`);
+
+      const ffmpeg = spawn(cmd, args, {
+        detached: true,
+        stdio: 'ignore',
+      });
+
+      ffmpeg.unref();
+
+      this.logger.log(`Thumbnail service finished for ${key}`);
+    } catch (error) {
+      this.logger.error(error);
+    }
   }
 
-  private spawn(key: string) {
-    const cmd = this.config.get(ENV.FFMPEG);
-    const args = [
-      '-y',
-      '-i',
-      `media/live/${key}/index.m3u8`,
-      '-ss',
-      '00:00:01',
-      '-vframes',
-      '1',
-      '-vf',
-      'scale=-2:300',
-      `thumbnails/${key}.png`,
-    ];
+  private watch(path: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const watcher = watch(path, (event, filename) => {
+        if (filename === 'index.m3u8') {
+          watcher.close();
+          resolve();
+        }
+      });
 
-    const ffmpeg = spawn(cmd, args);
+      watcher.once('error', () => {
+        reject(new Error(`Error watching ${path}`));
+      });
 
-    ffmpeg.stderr.on('data', (data) => {
-      console.error(`stderr: ${data}`);
+      setTimeout(() => {
+        watcher.close();
+        reject(new Error(`Timeout watching ${path}`));
+      }, 5000);
     });
-
-    ffmpeg.unref();
   }
 }

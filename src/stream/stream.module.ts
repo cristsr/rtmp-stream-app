@@ -1,17 +1,18 @@
 import { Module } from '@nestjs/common';
-import { RtmpService } from 'stream/services';
 import { ConfigService } from '@nestjs/config';
-import NodeMediaServer from 'node-media-server';
-import { MEDIA_SERVER, MONGO_CLIENT } from './constants';
-import { ENV } from 'environment';
 import { HttpModule } from '@nestjs/axios';
-import { StreamRepository } from './repositories';
 import { MongoClient } from 'mongodb';
-import { ThumbnailService } from 'stream/services';
-import { StreamController } from './controllers/stream/stream.controller';
-import { ThumbnailController } from './controllers/thumbnail/thumbnail.controller';
-import { StreamProvider } from './providers';
-import { RtmpController } from './controllers/rtmp/rtmp.controller';
+import NodeMediaServer from 'node-media-server';
+import { ENV } from 'environment';
+import { MEDIA_SERVER, MONGO_CLIENT } from 'stream/constants';
+import { StreamRepository } from 'stream/repositories';
+import { ThumbnailService, RtmpService } from 'stream/services';
+import {
+  RtmpController,
+  StreamController,
+  ThumbnailController,
+} from 'stream/controllers';
+import { StreamProvider } from 'stream/providers';
 
 @Module({
   imports: [HttpModule],

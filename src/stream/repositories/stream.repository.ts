@@ -1,7 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { MONGO_CLIENT } from '../constants';
+import { MONGO_CLIENT } from 'stream/constants';
 import { MongoClient } from 'mongodb';
-import { classToClass } from 'class-transformer';
 
 @Injectable()
 export class StreamRepository {
@@ -22,9 +21,11 @@ export class StreamRepository {
         return null;
       }
 
-      stream.id = stream._id;
-
-      return classToClass(stream, { excludePrefixes: ['_'] });
+      return {
+        id: stream._id.toString(),
+        user: stream.user.toString(),
+        key: stream.key,
+      };
     } catch (e) {
       this.logger.error(e);
       return null;
