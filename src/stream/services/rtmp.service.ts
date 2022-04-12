@@ -15,7 +15,7 @@ export class RtmpService {
     const stream = await this.streamRepository.findByKey(key);
 
     if (!stream) {
-      this.logger.error(`Stream with key ${key} not found`);
+      this.logger.error(`Stream ${key} not found`);
       return session.reject();
     }
 
