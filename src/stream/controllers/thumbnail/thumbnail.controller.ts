@@ -8,7 +8,7 @@ export class ThumbnailController {
   @Get(':image')
   getImage(@Query('image') image: string, @Res() res: Response) {
     this.logger.log(`Getting thumbnail for image: ${image}`);
-    const path = `${process.cwd()}/thumbnails/${image}`;
+    const path = `${process.cwd()}/media/thumbnails/${image}`;
     res.sendFile(path);
   }
 }
