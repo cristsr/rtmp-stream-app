@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import NodeMediaServer from 'node-media-server';
 import { MEDIA_SERVER } from 'stream/constants';
-import { RtmpService, ThumbnailService } from 'stream/services';
+import { RtmpService } from 'stream/services';
 import { extractKeyFromPath } from 'stream/utils';
 
 @Injectable()
@@ -12,7 +12,6 @@ export class RtmpController implements OnModuleInit {
     @Inject(MEDIA_SERVER)
     private nms: NodeMediaServer,
     private rtmpService: RtmpService,
-    private thumbnailService: ThumbnailService,
   ) {}
 
   // media events handlers
@@ -25,7 +24,6 @@ export class RtmpController implements OnModuleInit {
     this.logger.log(`Connect stream: ${id} ${streamPath}`);
     const key = extractKeyFromPath(streamPath);
     const session = this.nms.getSession(id);
-    await this.thumbnailService.generate(key);
     await this.rtmpService.connectStream(key, session);
   }
 

@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
 import NodeMediaServer from 'node-media-server';
-import { MEDIA_SERVER } from './stream/constants';
+import { MEDIA_SERVER } from 'stream/constants';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);

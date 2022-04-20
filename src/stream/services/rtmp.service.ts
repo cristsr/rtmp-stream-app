@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { StreamProvider } from 'stream/providers';
 import { StreamRepository } from 'stream/repositories';
+import { ThumbnailService } from './thumbnail.service';
 
 @Injectable()
 export class RtmpService {
@@ -9,6 +10,7 @@ export class RtmpService {
   constructor(
     private streamRepository: StreamRepository,
     private streamProvider: StreamProvider,
+    private thumbnailService: ThumbnailService,
   ) {}
 
   async connectStream(key: string, session: any): Promise<void> {
@@ -19,12 +21,15 @@ export class RtmpService {
       return session.reject();
     }
 
-    this.streamProvider.connectStream(key).subscribe({
+    const thumbnail = await this.thumbnailService.generate(key);
+    console.log(thumbnail);
+
+    this.streamProvider.connectStream({ key, thumbnail }).subscribe({
       next: () => {
         this.logger.log(`Connect stream successfully`);
       },
       error: (err) => {
-        this.logger.error(`Connect stream error: ${err}`);
+        this.logger.error(`Connect stream error: ${err.message}`);
       },
     });
   }

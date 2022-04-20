@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Observable } from 'rxjs';
 import { ENV } from 'environment';
 import { formatError } from 'stream/utils';
+import { StreamReq } from 'stream/dto';
 
 @Injectable()
 export class StreamProvider {
@@ -14,10 +15,10 @@ export class StreamProvider {
     this.streamUrl = this.config.get(ENV.STREAM_APP_URL);
   }
 
-  connectStream(key: string): Observable<void> {
-    const url = this.streamUrl.concat('/stream/connect/').concat(key);
+  connectStream(data: StreamReq): Observable<void> {
+    const url = this.streamUrl.concat('/stream/connect/');
     this.logger.log(`Adding stream to ${url}`);
-    return this.http.get(url).pipe(formatError());
+    return this.http.post(url, data).pipe(formatError());
   }
 
   disconnectStream(key: string): Observable<void> {

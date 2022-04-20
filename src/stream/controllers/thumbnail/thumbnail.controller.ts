@@ -9,6 +9,7 @@ export class ThumbnailController {
   getImage(@Param('image') image: string, @Res() res: Response) {
     this.logger.log(`Getting thumbnail for image: ${image}`);
     const path = `${process.cwd()}/media/thumbnails/${image}`;
+
     res.sendFile(path, (err) => {
       if (err) {
         this.logger.error(`Error getting thumbnail for image: ${image}`);

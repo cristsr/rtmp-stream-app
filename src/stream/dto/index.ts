@@ -2,8 +2,8 @@ import { IsString } from 'class-validator';
 
 export class StreamReq {
   @IsString()
-  id: string;
+  key: string;
 
   @IsString()
-  key: string;
+  thumbnail: string;
 }
