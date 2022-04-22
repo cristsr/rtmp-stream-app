@@ -52,7 +52,7 @@ export class ThumbnailService {
       setTimeout(() => {
         watcher.close();
         reject(new Error(`Timeout watching ${path}`));
-      }, 5000);
+      }, 1000);
     });
   }
 
